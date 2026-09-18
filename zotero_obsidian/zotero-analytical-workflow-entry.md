@@ -99,7 +99,7 @@ Use an explicit prefix so this entrypoint is selected instead of the plugin's
 generic note or summary Skills:
 
 ```text
-ZAW：对当前论文执行完整入库。zotero_key=XXXXXXX
+ZAW：对当前论文执行完整入库。
 ```
 
 ```text
