@@ -1,6 +1,6 @@
 # Zotero Analytical Workflow Skills
 
-本仓库在 macOS 上的 Obsidian 目录和模板位置统一定义在
+本仓库的 Obsidian 目录和模板位置统一定义在
 [`LOCAL_CONFIG.md`](LOCAL_CONFIG.md)。任何执行型 Skill 都必须先读取该文件；本文不再把历史 Windows 路径作为运行配置。
 工作流根目录通过 `LOCAL_CONFIG.md` 的实际位置动态解析，因此整个仓库可以移动。
 
@@ -45,20 +45,21 @@ Zotero-analytical-writer/
 │       ├── 方法模板.md
 │       ├── 关系模板.md
 │       └── 争议模板.md
-└── zotero-analytical-workflow-entry.md  # llm-for-zotero 入口 Skill
+└── zotero_obsidian/
+    └── zotero-analytical-workflow-entry.md  # llm-for-zotero 入口 Skill
 ```
 
 ## llm-for-zotero 入口
 
 `llm-for-zotero` 不会递归识别本仓库的 `skills/*/SKILL.md`。请将
-[`zotero-analytical-workflow-entry.md`](zotero-analytical-workflow-entry.md)
+[`zotero_obsidian/zotero-analytical-workflow-entry.md`](zotero_obsidian/zotero-analytical-workflow-entry.md)
 复制到插件的顶层 Skill 目录：
 
 ```text
 {ZoteroDataDir}/llm-for-zotero/skills/zotero-analytical-workflow-entry.md
 ```
 
-在本机通常是：
+当前机器通常是：
 
 ```text
 /Users/sheny/Zotero/llm-for-zotero/skills/
@@ -159,12 +160,13 @@ ZAW：对当前论文执行完整入库。zotero_key=XXXXXXX
 
 ## 环境说明
 
-当前适配目标是 macOS + `/Users/sheny/Documents/Obsidian Vault`：
+本工作流不是 macOS 专属版本。平台相关配置统一放在 [`LOCAL_CONFIG.md`](LOCAL_CONFIG.md)：
 
-- Analytical Notes 使用现有的 `Zotero Notes/`，不移动历史笔记。
-- 进入对应写入阶段时，自动创建并写入 Vault 内的 `03fulltext/` 和 `01knowledge/`。
-- 单篇论文模板和知识库模板继续以本仓库 `templates/` 为唯一模板权威。
-- MinerU 不绑定 Windows 可执行文件；运行时探测 macOS 上可用的 `mineru`、`python3 -m mineru` 或 `mineru-api`。找不到时报告 `FULLTEXT_DEFERRED`。
+- 用户只需设置 `OBSIDIAN_VAULT_ROOT`；当前仓库已填入一个可直接使用的本机路径示例。
+- `Zotero Notes/`、`03fulltext/` 和 `01knowledge/` 都是相对于 Vault 的目录。
+- 进入对应写入阶段时，缺少的目标目录会自动创建。
+- 模板始终相对于可移动的 `WORKFLOW_ROOT` 解析。
+- MinerU 不绑定某个操作系统的可执行文件；优先复用 llm-for-zotero 结果，必要时运行时探测可用后端。
 
 ## 后续可继续补充
 

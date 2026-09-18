@@ -77,10 +77,10 @@ blindly; select the minimum stages required by the observed state.
 ## Evidence and write rules
 
 - Use `zotero_key` as the primary paper identity and `pdf_key` for the PDF.
-- Use the existing `Zotero Notes/` directory for Analytical Notes, and the
-  configured `03fulltext/` and `01knowledge/` directories for their respective
-  layers. Create missing destination directories only immediately before a
-  write; read-only inspection must not create empty directories.
+- Use the `ANALYTICAL_NOTES_DIR`, `FULLTEXT_DIR`, and `KNOWLEDGE_DIR` resolved
+  from `LOCAL_CONFIG.md` for their respective layers. Create missing destination
+  directories only immediately before a write; read-only inspection must not
+  create empty directories.
 - Reuse valid llm-for-zotero Fulltext/cache results before attempting a new
   MinerU conversion. MinerU credentials are managed outside this public
   workflow by llm-for-zotero; never request, print, store, or pass a secret from
