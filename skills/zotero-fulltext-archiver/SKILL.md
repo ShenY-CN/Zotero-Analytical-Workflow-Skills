@@ -3,7 +3,7 @@ name: zotero-fulltext-archiver
 description: "将已有 Zotero PDF 或历史 MinerU 输出归档为可追踪的 ResearchVault Fulltext Markdown：先复用已成功的 MinerU 链路，再写入统一 frontmatter、整理安全图片路径、保留页面映射并执行只读校验。此技能不做中文总结、不改写论文正文、不负责用户检索。"
 ---
 
-# Zotero Fulltext Archiver
+# Zotero Fulltext Archiver。
 
 ## Local macOS configuration
 
