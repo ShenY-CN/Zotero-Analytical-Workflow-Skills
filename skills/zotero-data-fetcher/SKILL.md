@@ -5,6 +5,17 @@ description: "根据 Zotero Item Key 或标题提取元数据、父条目与 PDF
 
 # Zotero Data Fetcher
 
+## Local macOS configuration
+
+Before resolving output paths, read `../../LOCAL_CONFIG.md`. Use the configured
+Obsidian `Zotero Notes/` and `03fulltext/` roots for `note_path` and
+`fulltext_path`; resolve Zotero's own data directory from the running Zotero
+installation or its local API rather than hard-coding a platform path.
+
+The workflow root is the directory containing `LOCAL_CONFIG.md`; it may be
+moved without changing this Skill. The Fetcher is read-only and must not create
+Vault directories.
+
 ## 职责
 
 只负责找到 Zotero 数据、父条目和 PDF；不负责 MinerU 转换、中文分析笔记或用户检索。

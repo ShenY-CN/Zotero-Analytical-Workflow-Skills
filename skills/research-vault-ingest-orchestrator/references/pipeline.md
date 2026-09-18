@@ -6,7 +6,7 @@ Accept a paper only when the user identifies it by Zotero item, `zotero_key`, a 
 
 ## Stages
 
-1. **State inspection** — inspect existing Note, Fulltext, Knowledge source coverage, sidecars, prior log entries, and Note conformance to `D:\ResearchVault\模板\论文精读模板.md` without writing.
+1. **State inspection** — inspect existing Note, Fulltext, Knowledge source coverage, sidecars, prior log entries, and Note conformance to `$ANALYTICAL_NOTE_TEMPLATE` without writing.
 2. **Identity resolution** — use `zotero-data-fetcher` to resolve parent `zotero_key`, PDF `pdf_key`, and actual PDF path. A conflict becomes `MANUAL_REVIEW_REQUIRED`.
 3. **Fulltext gate** — reuse a valid formal Fulltext first; otherwise use `zotero-fulltext-archiver` and its production MinerU route.
 4. **Analytical Note gate** — reuse a valid formal Note only if its identity, source links, and structure conform to the canonical template; otherwise use `zotero-analytical-writer` in create or same-path template-repair mode after sufficient source material is available.

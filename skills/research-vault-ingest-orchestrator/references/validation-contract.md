@@ -7,7 +7,7 @@ Run only the checks applicable to the observed state; never convert an omitted s
 - Parent `zotero_key` is resolved and unique.
 - `pdf_key` is resolved when a PDF/Fulltext is required.
 - Note exists when the workflow claims a Note result.
-- Note uses the canonical structure from `D:\ResearchVault\模板\论文精读模板.md` when the request requires strict template compliance; no stale template placeholders or legacy headings remain.
+- Note uses the canonical structure from `$ANALYTICAL_NOTE_TEMPLATE` when the request requires strict template compliance; no stale template placeholders or legacy headings remain.
 - Note frontmatter preserves the stable identity and required source fields, including `zotero_key`, `pdf_key`, `fulltext_path`, and `note_path` when available.
 - Formal Fulltext exists when the workflow claims a Fulltext result.
 - Note → Fulltext and Fulltext → Note paths resolve when both artifacts exist.
@@ -17,7 +17,7 @@ Run only the checks applicable to the observed state; never convert an omitted s
 
 ## Knowledge checks
 
-When Knowledge is updated or re-evaluated, run `research-vault-knowledge-maintainer/scripts/validate_research_vault_knowledge.py --vault D:\ResearchVault` and require exit code 0. Inspect the resulting checks for:
+When Knowledge is updated or re-evaluated, run the repository-provided Knowledge validator with `--vault "$OBSIDIAN_VAULT"` if that script exists. This checkout currently has no validator script, so perform the checks below manually and report `MANUAL_VALIDATION`; never claim an exit code from a missing script. Inspect the resulting checks for:
 
 - Knowledge source links, claim/gap sidecars and statement drift;
 - source mismatch, embedded machine metadata, raw key leakage and template/schema compliance;

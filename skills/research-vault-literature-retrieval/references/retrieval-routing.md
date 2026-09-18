@@ -16,7 +16,7 @@ Evidence trace: **Knowledge → Analytical Note → targeted Fulltext → option
 
 ## Non-negotiable rules
 
-- Begin normal paper discovery in `02vault` and its `_index` pages; do not default to a vault-wide `03fulltext` scan.
+- Begin normal paper discovery in `Zotero Notes` and its `_index` pages; do not default to a vault-wide `03fulltext` scan.
 - Knowledge can identify concepts, relations, controversies, gaps and candidate papers, but paper identity and evidence interpretation must return to the actual Analytical Note.
 - A Fulltext search inherits the Note and claim context and is restricted to the resolved paper(s).
 - A direct fulltext-wide search is allowed only when the user explicitly requests it or Notes/Knowledge cannot recall sufficient candidates; label it supplementary recall and then resolve each candidate through its Note.

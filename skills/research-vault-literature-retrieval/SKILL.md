@@ -1,9 +1,19 @@
 ---
 name: research-vault-literature-retrieval
-description: "ResearchVault 文献知识问题的默认检索技能。先从 02vault/_index 和 D:\\ResearchVault\\02vault 的 Analytical Notes 定位相关论文，再按需要定向进入对应 D:\\ResearchVault\\03fulltext MinerU Markdown，必要时回到 Zotero PDF 验证。若用户消息以‘基于当前 ResearchVault 项目文件检索’（或明确要求基于当前 ResearchVault 项目文件作答）开头，必须优先执行严格的项目文件检索后再回答。纯 Skill/Python/Git/文件整理/MinerU 调试等操作任务不自动触发文献检索。"
+description: "ResearchVault 文献知识问题的默认检索技能。先从本机 Obsidian Vault 的 Zotero Notes/_index 和 Analytical Notes 定位相关论文，再按需要定向进入 03fulltext 的 MinerU Markdown，必要时回到 Zotero PDF 验证。若用户消息以‘基于当前 ResearchVault 项目文件检索’（或明确要求基于当前 ResearchVault 项目文件作答）开头，必须优先执行严格的项目文件检索后再回答。纯 Skill/Python/Git/文件整理/MinerU 调试等操作任务不自动触发文献检索。"
 ---
 
 # Research Vault Literature Retrieval
+
+## Local macOS configuration
+
+Before project-file retrieval, read `../../LOCAL_CONFIG.md`. On this machine,
+`$ANALYTICAL_NOTES_DIR` is the existing `Zotero Notes/` directory,
+`$FULLTEXT_DIR` is `03fulltext/`, and `$KNOWLEDGE_DIR` is `01knowledge/` inside
+the Obsidian Vault. Do not request or use historical Windows absolute paths.
+Resolve repository-relative references from the directory containing
+`LOCAL_CONFIG.md`; this workflow folder may be moved. Retrieval is read-only,
+so it must not create missing Vault directories.
 
 ## 核心定位
 
@@ -18,9 +28,9 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 
 ## 目录与身份规则
 
-- D:\ResearchVault\02vault 是 PRIMARY RETRIEVAL LAYER 和 SEMANTIC RETRIEVAL LAYER。
-- D:\ResearchVault\03fulltext 是 SUPPLEMENTARY ORIGINAL-TEXT LAYER 和 SOURCE DETAIL LAYER。
-- 两个目录必须物理分离；不得把 Fulltext 放入 02vault，也不得把 Analytical Note 放入 03fulltext。
+- `$ANALYTICAL_NOTES_DIR` 是 PRIMARY RETRIEVAL LAYER 和 SEMANTIC RETRIEVAL LAYER。
+- `$FULLTEXT_DIR` 是 SUPPLEMENTARY ORIGINAL-TEXT LAYER 和 SOURCE DETAIL LAYER。
+- 两个目录必须物理分离；不得把 Fulltext 放入 `Zotero Notes/`，也不得把 Analytical Note 放入 `03fulltext/`。
 - 两层属于同一篇论文时，统一使用 zotero_key。
 - Note → Fulltext 优先通过 fulltext_path，其次通过 zotero_key，最后才允许唯一的 title fallback。
 - Fulltext → Note 通过 note_path，并同时核对 zotero_key 和 pdf_key。
@@ -66,7 +76,7 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 
 `USER QUESTION → PARSE RESEARCH QUESTION → SEARCH CURRENT RESEARCHVAULT PROJECT FILES → IDENTIFY CANDIDATE PAPERS → RESOLVE CANONICAL SOURCE IDENTITY → LOCATE REAL ANALYTICAL NOTES → LOCATE MATCHING FULLTEXTS → VERIFY IMPORTANT CLAIMS WHEN REQUIRED → CLASSIFY EVIDENCE → SYNTHESIZE ANSWER`
 
-严格模式下，优先使用当前项目环境实际返回的文件检索结果。开始检索时不要要求用户提供 Windows absolute path、精确 Note/Fulltext 文件名、Zotero key 或 DOI；只有项目文件结果不足以解决 source identity 时，才进一步使用这些定位信息。
+严格模式下，优先使用当前项目环境实际返回的文件检索结果。开始检索时不要要求用户提供 macOS absolute path、精确 Note/Fulltext 文件名、Zotero key 或 DOI；只有项目文件结果不足以解决 source identity 时，才进一步使用这些定位信息。
 
 对核心来源尽量建立并核验：`Canonical paper ↔ actual Analytical Note ↔ matching Fulltext`。Analytical Note 用于理解研究设计、数据、方法、主要发现、局限和主题关系；Fulltext 用于核验重要结论、数值、模型结果、显著性、因果性、变量定义、阈值和作者原始解释。沿用本技能已有证据 schema，不另建第二套 evidence taxonomy。
 
@@ -82,7 +92,7 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 
 ## Knowledge-aware routing
 
-Keep NOTE-FIRST RETRIEVAL. Knowledge (`D:\ResearchVault\01knowledge`) is an optional derived-synthesis routing layer for concepts, methods, relationships, controversies, and research-direction/gap questions. It never replaces the Analytical Note or original-text evidence chain.
+Keep NOTE-FIRST RETRIEVAL. Knowledge (`$KNOWLEDGE_DIR`) is an optional derived-synthesis routing layer for concepts, methods, relationships, controversies, and research-direction/gap questions. It never replaces the Analytical Note or original-text evidence chain.
 
 Classify each question with [references/retrieval-routing.md](references/retrieval-routing.md) before retrieval. For paper-specific and exact-source questions, begin directly with the Analytical Note. For broad synthesis, start from Knowledge only to identify the relevant claims/pages, then return to their supporting Notes; use targeted Fulltext only for the precise point that needs verification.
 
@@ -96,7 +106,7 @@ Knowledge-assisted routing does not authorize a default fulltext-wide scan, raw-
 
 ### STEP 2 — Analytical-note Index
 
-按以下顺序读取 `D:\ResearchVault\02vault\_index\` 中存在的页面，缺失则跳过：
+按以下顺序读取 `$ANALYTICAL_NOTES_DIR/_index/` 中存在的页面，缺失则跳过：
 
 1. 文献索引.md
 2. 研究主题索引.md
@@ -107,9 +117,9 @@ Knowledge-assisted routing does not authorize a default fulltext-wide scan, raw-
 
 ### STEP 3 — Analytical Note Retrieval
 
-正常文献发现只能先搜索 D:\ResearchVault\02vault。搜索 title、theme、methodology、core_variable、key_finding、relevance、中文正文、英文术语、作者和 keywords。
+正常文献发现只能先搜索 `$ANALYTICAL_NOTES_DIR`。搜索 title、theme、methodology、core_variable、key_finding、relevance、中文正文、英文术语、作者和 keywords。
 
-绝不能以 D:\ResearchVault\03fulltext 作为正常检索第一步。
+绝不能以 `$FULLTEXT_DIR` 作为正常检索第一步。
 
 ### STEP 4 — Read Candidate Notes
 
@@ -149,7 +159,7 @@ paper、theme、method、variable、finding、relevance、zotero_key、fulltext_
 
 ### Primary Retrieval Rule
 
-Analytical Notes are the default and primary source for identifying relevant papers. Never begin normal literature discovery from fulltext/.
+Analytical Notes are the default and primary source for identifying relevant papers. Never begin normal literature discovery from `$FULLTEXT_DIR`.
 
 ### Fulltext Follow-up Rule
 
@@ -167,11 +177,11 @@ Use MinerU Fulltext to supplement, verify, refine, trace, and quote Analytical N
 
 默认只对已定位论文做 targeted search，例如：
 
-D:\ResearchVault\03fulltext\能耗\TTD9LZ5H.md
+`$FULLTEXT_DIR/能耗/TTD9LZ5H.md`
 
 根据 Note 中的 building height、building volume、building lifespan、random forest、SHAP 或对应英文原句搜索。
 
-禁止默认执行 D:\ResearchVault\03fulltext 的全库扫描。仅以下情况允许例外：
+禁止默认执行 `$FULLTEXT_DIR` 的全库扫描。仅以下情况允许例外：
 
 1. 用户明确要求直接在全文中搜索某术语；
 2. 用户要求找正文中出现某个确切词组的论文；
@@ -210,7 +220,7 @@ type: literature-fulltext 不得作为普通文献记录出现。物理隔离不
 ## 五个逻辑测试
 
 1. “有哪些论文研究建筑高度与环境绩效？”  
-   Root Index → 论文库 → Analytical Notes → 返回相关论文，不扫描 fulltext。
+   Root Index → Zotero Notes → Analytical Notes → 返回相关论文，不扫描 Fulltext。
 2. “A、B、C 三篇如何定义 building height？”  
    Notes → 确认 A/B/C → 分别 resolve Fulltext → 只搜索三篇全文 → 比较定义。
 3. “第二篇作者关于结论的原话？”  

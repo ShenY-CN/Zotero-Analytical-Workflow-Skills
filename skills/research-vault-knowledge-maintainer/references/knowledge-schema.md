@@ -31,12 +31,12 @@ Relation pages additionally require `subject`, `relation`, `object`, and `agreem
 
 ## Claim record
 
-Use natural section titles in Markdown. Store metadata for important relation, controversy, and synthesis claims in `01knowledge/.meta/claims/<claim_id>.json`; Markdown itself contains only the human-readable claim.
+Use natural section titles in Markdown. Store metadata for important relation, controversy, and synthesis claims in `$KNOWLEDGE_META_DIR/claims/<claim_id>.json`; Markdown itself contains only the human-readable claim.
 
 ```markdown
 **结论**：…
 
-- **证据**：[[02vault/.../完整论文标题|可读短名]]
+- **证据**：[[Zotero Notes/.../完整论文标题|可读短名]]
 - **证据类型**：直接证据
 - **验证**：全文已核验
 ```
@@ -49,7 +49,7 @@ Each claim sidecar contains `claim_id`, `page_path`, `section_heading`, `normali
 
 ## Gap record
 
-Store each gap in `01knowledge/.meta/gaps/` and its index; do not embed a marker in Markdown.
+Store each gap in `$KNOWLEDGE_META_DIR/gaps/` and its index; do not embed a marker in Markdown.
 
 ```markdown
 {"gap_provenance": "evidence-backed"}
@@ -61,7 +61,7 @@ An `evidence-backed` gap explicitly says it is limited to current Vault coverage
 
 A human-readable short name is an alias, not an identity. Resolve source identity through the linked Analytical Note and its `zotero_key`; never display a raw key in normal Knowledge prose or properties. Never create an empty note to satisfy a link.
 
-Machine metadata belongs only in `01knowledge/.meta/`; it must not be linked from ordinary Knowledge pages or listed in the Knowledge Index.
+Machine metadata belongs only in `$KNOWLEDGE_META_DIR/`; it must not be linked from ordinary Knowledge pages or listed in the Knowledge Index.
 
 ## Templates
 

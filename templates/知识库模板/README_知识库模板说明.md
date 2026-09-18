@@ -1,6 +1,6 @@
 # ResearchVault 知识库模板说明
 
-本目录用于 `01knowledge` 中不同类型知识页的结构化写作。
+本目录用于 Obsidian Vault 的 `$KNOWLEDGE_DIR` 中不同类型知识页的结构化写作。
 
 ## 模板类型
 

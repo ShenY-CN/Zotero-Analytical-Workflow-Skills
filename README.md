@@ -1,5 +1,9 @@
 # Zotero Analytical Workflow Skills
 
+本仓库在 macOS 上的 Obsidian 目录和模板位置统一定义在
+[`LOCAL_CONFIG.md`](LOCAL_CONFIG.md)。任何执行型 Skill 都必须先读取该文件；本文不再把历史 Windows 路径作为运行配置。
+工作流根目录通过 `LOCAL_CONFIG.md` 的实际位置动态解析，因此整个仓库可以移动。
+
 这不是单个“论文精读 skill”，而是一整条 Zotero 文献处理工作流的打包仓库。
 
 仓库当前包含 7 个核心 skill 和 7 个模板文件，用来覆盖：
@@ -41,6 +45,33 @@ Zotero-analytical-writer/
 │       ├── 方法模板.md
 │       ├── 关系模板.md
 │       └── 争议模板.md
+└── zotero-analytical-workflow-entry.md  # llm-for-zotero 入口 Skill
+```
+
+## llm-for-zotero 入口
+
+`llm-for-zotero` 不会递归识别本仓库的 `skills/*/SKILL.md`。请将
+[`zotero-analytical-workflow-entry.md`](zotero-analytical-workflow-entry.md)
+复制到插件的顶层 Skill 目录：
+
+```text
+{ZoteroDataDir}/llm-for-zotero/skills/zotero-analytical-workflow-entry.md
+```
+
+在本机通常是：
+
+```text
+/Users/sheny/Zotero/llm-for-zotero/skills/
+```
+
+只有这个入口文件需要放进 `llm-for-zotero/skills/`；完整工作流仓库可以放在
+任意位置。入口会通过 `workflow_root`、`ZAW_WORKFLOW_ROOT` 或 marker 文件
+定位工作流根目录。复制后重启插件，或在 Skills 页面新建/删除一次 Skill 触发重新扫描。
+
+使用时建议显式写 `ZAW`，例如：
+
+```text
+ZAW：对当前论文执行完整入库。zotero_key=XXXXXXX
 ```
 
 ## 工作流关系
@@ -112,7 +143,7 @@ Zotero-analytical-writer/
 
 适用于从已有精读笔记和 Fulltext 维护 Research Knowledge Wiki。它强调：
 
-- 严格使用 `D:\ResearchVault\模板\知识库模板` 的 README 和对应页面模板
+- 严格使用 [`templates/知识库模板/`](templates/知识库模板/) 的 README 和对应页面模板
 - 区分结构化库字段与原文证据，保留真实 `source_notes`、证据表、边界、缺口和争议
 - “全部论文”任务必须建立逐篇 coverage ledger，不能只生成综合页
 - 精确结论、公式、阈值、机制和引语需要 Fulltext 支持；缺全文时明确标注延后核验
@@ -124,15 +155,16 @@ Zotero-analytical-writer/
 ## 使用建议
 
 - 如果你是把这些 skill 用于 Codex 或类似代理系统，建议保持当前目录结构不变。
-- `zotero-analytical-writer` 使用 `D:\ResearchVault\模板\论文精读模板.md`；知识库维护 skill 使用 `D:\ResearchVault\模板\知识库模板`。
+- `zotero-analytical-writer` 使用 [`templates/论文精读模板.md`](templates/论文精读模板.md)；知识库维护 skill 使用 [`templates/知识库模板/`](templates/知识库模板/)。
 
 ## 环境说明
 
-仓库内容目前默认基于 Windows 路径习惯编写，并保留了你当前环境中的默认目录，例如：
+当前适配目标是 macOS + `/Users/sheny/Documents/Obsidian Vault`：
 
-- `D:\ResearchVault\note`
-
-如果在别的机器或仓库环境中使用，建议通过命令行参数覆盖这些默认路径，而不是直接依赖硬编码默认值。
+- Analytical Notes 使用现有的 `Zotero Notes/`，不移动历史笔记。
+- 进入对应写入阶段时，自动创建并写入 Vault 内的 `03fulltext/` 和 `01knowledge/`。
+- 单篇论文模板和知识库模板继续以本仓库 `templates/` 为唯一模板权威。
+- MinerU 不绑定 Windows 可执行文件；运行时探测 macOS 上可用的 `mineru`、`python3 -m mineru` 或 `mineru-api`。找不到时报告 `FULLTEXT_DEFERRED`。
 
 ## 后续可继续补充
 

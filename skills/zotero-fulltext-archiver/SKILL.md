@@ -5,16 +5,29 @@ description: "将已有 Zotero PDF 或历史 MinerU 输出归档为可追踪的 
 
 # Zotero Fulltext Archiver
 
-## Batch 6D production safeguards (Windows CPU / MinerU 3.x)
+## Local macOS configuration
 
-When a validated Zotero PDF must be run through MinerU on the current Windows
-CPU environment, use an ASCII-only *working copy* in a scoped temporary run
-directory. The Zotero attachment remains read-only. Record the source and
-working-copy SHA-256 values and do not invoke MinerU until they match.
+Before filesystem or MinerU work, read `../../LOCAL_CONFIG.md`. Use the
+configured Obsidian paths and repository templates; never use historical
+Windows runner paths.
 
-Use the explicitly validated `pipeline` backend for this environment. This is
-an environment-specific fallback, not a general claim that the hybrid backend
-is unsuitable. Give a complete article a hard limit of at least 60 minutes.
+Resolve repository-relative templates from the directory containing
+`LOCAL_CONFIG.md`. Before a successful archive write, create
+`$FULLTEXT_DIR/<collection>/` and its `images/<zotero_key>/` subdirectory as
+needed; do not create them during a read-only existence check.
+
+## Production safeguards (macOS / cloud or local MinerU)
+
+When a validated Zotero PDF must be run through MinerU, use an ASCII-only
+*working copy* in `$MINERU_STAGING_DIR`. The Zotero attachment remains
+read-only. Record the source and working-copy SHA-256 values and do not invoke
+MinerU until they match.
+
+Prefer the Fulltext cache already produced by llm-for-zotero. The cloud MinerU
+credential is managed outside this public workflow by the plugin; never place
+it in a command, file, log, or frontmatter. If a new local conversion is
+explicitly needed, use a locally detected `mineru`, `python3 -m mineru`, or
+`mineru-api` route. Give a complete article a hard limit of at least 60 minutes.
 A no-progress stop may be used only after 10--15 minutes during which stdout,
 stderr, output files, and process CPU time have all remained inactive. Abort
 for persistently available RAM below 2 GB only after a sustained observation,
@@ -45,31 +58,31 @@ still verify quotation pages directly against the read-only Original PDF.
 
 ## 1. 先确认实际 MinerU 环境
 
-不要重新安装 MinerU。先搜索 `D:\ResearchVault`、`D:\research` 和相关项目中的 `MinerU`、`mineru`、`magic-pdf`、批处理脚本、配置和历史输出。
+不要重新安装 MinerU。先检查 llm-for-zotero 是否已有可复用的 Fulltext
+缓存；只有在明确需要新转换时，才探测 `command -v mineru`、
+`python3 -m mineru` 和 `mineru-api`。任何中间输出都写入
+`$MINERU_STAGING_DIR`，不写入 Obsidian Vault。
 
-当前已发现的可复用调用链是：
-
-`D:\research\mineru_batch_runner.py` → `D:\MinerU\.venv\Scripts\mineru.exe` → 系统临时输出目录 → `D:\ResearchVault_Archive\mineru-staging\`。批量输出只能作为外部暂存；逐篇补齐 frontmatter、图片路径和 Note 关联并验证后，才复制到 `D:\ResearchVault\03fulltext\<collection>\`。
-
-历史 `MinerU_test` 的页码辅助文件已归档到 `D:\ResearchVault_Archive\2026-08-10\MinerU_test\`；如需核验历史页码映射可定向读取，但不足以证明所有论文都可可靠映射。
+如果既没有云端 API，也没有可用的本地 MinerU，停止全文阶段并报告
+`FULLTEXT_DEFERRED`，不要用普通 PDF 文本抽取结果冒充正式 MinerU Fulltext。
 
 ## 2. 归档路径
 
 正式全文：
 
 ```text
-D:\ResearchVault\03fulltext\<collection>\<zotero_key>.md
-D:\ResearchVault\03fulltext\<collection>\images\<zotero_key>\<image-file>
+$FULLTEXT_DIR/<collection>/<zotero_key>.md
+$FULLTEXT_DIR/<collection>/images/<zotero_key>/<image-file>
 ```
 
-旧的 `MinerU_batch` 已归档到 `D:\ResearchVault_Archive\2026-08-10\MinerU_batch\`，不作为运行时输入或正式全文检索目录。当前 Vault 的分析笔记仍位于 `论文库/` 时，不移动它们；仅在全文 frontmatter 中写准确的 `note_path`。
+历史 MinerU 批处理结果如果存在，只能作为外部暂存输入；不作为默认正式全文检索目录。当前 Vault 的分析笔记位于 `Zotero Notes/` 时，不移动它们；仅在全文 frontmatter 中写准确的 `note_path`。
 
 ## 3. 优先迁移旧结果
 
 若 `MinerU_batch` 已有与 `zotero_key` 唯一对应的 Markdown 和图片：
 
 1. 确认 Zotero 主键、PDF 键、标题和 Collection。
-2. 将旧 Markdown 复制到正式 `03fulltext/<collection>/<zotero_key>.md`；分析笔记中的 Obsidian 链接仍使用 `fulltext/<collection>/<zotero_key>`。
+2. 将旧 Markdown 复制到正式 `$FULLTEXT_DIR/<collection>/<zotero_key>.md`；分析笔记中的 Obsidian 链接使用 `03fulltext/<collection>/<zotero_key>`。
 3. 将图片复制到 `images/<zotero_key>/`，不得使用完整论文标题作为目录名。
 4. 将原有图片引用改为相对于 Fulltext Markdown 的安全路径，例如 `![](<images/Q22PFLNV/image.jpg>)`。
 5. 逐一检查每个本地图片引用真实存在；有缺失时不能报告成功。
@@ -88,7 +101,7 @@ zotero_key: "Q22PFLNV"
 pdf_key: "4RMSR7ZR"
 doi: "..."
 collection: "创新经济地理"
-note_path: "论文库/创新经济地理/论文标题.md"
+note_path: "Zotero Notes/创新经济地理/论文标题.md"
 fulltext_path: "03fulltext/创新经济地理/Q22PFLNV.md"
 zotero_item: "zotero://select/library/items/Q22PFLNV"
 zotero_pdf: "zotero://open-pdf/library/items/4RMSR7ZR"
@@ -110,7 +123,7 @@ Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造�
 
 归档完成后：
 
-1. 分析笔记补 `fulltext_path`，并可增加 `[[fulltext/<collection>/<zotero_key>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
+1. 分析笔记补 `fulltext_path`，并可增加 `[[03fulltext/<collection>/<zotero_key>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
 2. Fulltext 补 `note_path`，确认双方 `zotero_key`、`pdf_key` 一致。
-3. 运行 `D:\research\zotero_batch\validate_research_vault_literature_links.py`，只报告，不自动删除。
+3. 若仓库或用户提供了文献链接校验脚本，运行该脚本；本仓库当前没有内置 validator 时，执行本节的人工检查并报告 `MANUAL_VALIDATION`，不假装运行不存在的脚本。
 4. 只有 PDF、Fulltext、图片、Note、链接均有效时，才向 Collection Manager 报告 COMPLETE。

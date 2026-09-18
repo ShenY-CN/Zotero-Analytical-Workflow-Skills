@@ -5,6 +5,17 @@ description: "Orchestrate the verified ResearchVault single-paper ingest workflo
 
 # ResearchVault Ingest Orchestrator
 
+## Local macOS configuration
+
+Before any filesystem operation, read `../../LOCAL_CONFIG.md`. Use the paths
+defined there for the Obsidian Vault, `Zotero Notes`, `03fulltext`, `01knowledge`
+and the templates. Never fall back to historical Windows paths.
+
+Resolve `WORKFLOW_ROOT` as the directory containing `LOCAL_CONFIG.md`; never
+depend on the folder's original absolute path. During a write stage, create the
+needed destination directories before writing. Read-only state inspection must
+not create empty Vault directories.
+
 ## Purpose and boundary
 
 This is the production control plane for a **specified** paper. It orchestrates existing specialist Skills; it does not reimplement Zotero extraction, MinerU conversion, Analytical Note writing, Knowledge synthesis, or retrieval.
@@ -13,13 +24,13 @@ It never performs discovery, searches Zotero for interesting papers, or download
 
 Current production layout:
 
-- Knowledge Wiki: `D:\ResearchVault\01knowledge`
-- Analytical Notes: `D:\ResearchVault\02vault`
-- Formal Fulltext: `D:\ResearchVault\03fulltext`
-- Knowledge machine metadata: `D:\ResearchVault\01knowledge\.meta`
-- Knowledge page templates: `D:\ResearchVault\模板\知识库模板`
-- MinerU production runner: `D:\ResearchVault\tools\run_mineru_production.py`
-- Canonical Analytical Note template: `D:\ResearchVault\模板\论文精读模板.md`
+- Knowledge Wiki: `$KNOWLEDGE_DIR`
+- Analytical Notes: `$ANALYTICAL_NOTES_DIR` (the existing `Zotero Notes/`)
+- Formal Fulltext: `$FULLTEXT_DIR`
+- Knowledge machine metadata: `$KNOWLEDGE_META_DIR`
+- Knowledge page templates: `$KNOWLEDGE_TEMPLATE_DIR`
+- MinerU production runner: `$MINERU_RUNNER` (runtime-discovered on macOS)
+- Canonical Analytical Note template: `$ANALYTICAL_NOTE_TEMPLATE`
 
 The stable identity is `zotero_key` (parent item); `pdf_key` identifies its PDF attachment. A title is display-only and may be used for human sanity checks, never as the primary key.
 
@@ -54,7 +65,7 @@ SPECIFIED PAPER
 
 At every gate, stop downstream writes on failure. Record a retryable or review state from [references/workflow-states.md](references/workflow-states.md); never label a partial result as success.
 
-For any Knowledge update, the Knowledge gate is a two-layer evidence pass: parse the Analytical Note's structured fields and sections, then search the linked `03fulltext` Markdown or original PDF for the exact result, mechanism, threshold, formula, limitation, and qualifier. The Note is the structured map; the original text is the primary evidence. A missing Fulltext produces `note_supported` or a deferred state, never an invented quotation or page number.
+For any Knowledge update, the Knowledge gate is a two-layer evidence pass: parse the Analytical Note's structured fields and sections, then search the linked `$FULLTEXT_DIR` Markdown or original PDF for the exact result, mechanism, threshold, formula, limitation, and qualifier. The Note is the structured map; the original text is the primary evidence. A missing Fulltext produces `note_supported` or a deferred state, never an invented quotation or page number.
 
 ## Workflow modes
 
@@ -81,18 +92,18 @@ Use exactly one mode for each request:
 ## Production rules
 
 - The Zotero fetcher must resolve `zotero_key` and `pdf_key`; do not use fuzzy title-based disk searches as acquisition.
-- For a needed new MinerU conversion, use the verified runner and the Fulltext Archiver instructions: an ASCII `input_<zotero_key>.pdf` working copy, matching source/working SHA-256, explicit `pipeline` backend in the current Windows CPU environment, one paper at a time, timestamped stdout/stderr, and scoped process cleanup. This documents `CURRENT_ENVIRONMENT_PIPELINE_PREFERRED`; it does not declare hybrid permanently unsupported.
+- For a needed new MinerU conversion, use the macOS route in the Fulltext Archiver instructions: an ASCII `input_<zotero_key>.pdf` working copy in `$MINERU_STAGING_DIR`, matching source/working SHA-256, one paper at a time, timestamped stdout/stderr, and scoped process cleanup. Do not assume a Windows executable or backend; if no local MinerU route is available, report `FULLTEXT_DEFERRED`.
 - Formal Fulltext is `03fulltext/<collection>/<zotero_key>.md`, with resolved image links and `MISSING_IMAGES = 0`. Preserve extracted body text; do not translate, summarize, polish, or Knowledge-ify it.
-- Analytical Note writing belongs solely to `zotero-analytical-writer` and represents single-paper structured understanding. For every new or explicitly normalized Note, use `D:\ResearchVault\模板\论文精读模板.md` as the structural authority; do not create a duplicate Note merely because an existing Note needs template repair.
+- Analytical Note writing belongs solely to `zotero-analytical-writer` and represents single-paper structured understanding. For every new or explicitly normalized Note, use `$ANALYTICAL_NOTE_TEMPLATE` as the structural authority; do not create a duplicate Note merely because an existing Note needs template repair.
 - When the user requires the template strictly, audit the existing Note before declaring `ALREADY_COMPLETE`. Preserve confirmed metadata, identity, links, formulas, and evidence, but reshape headings and conclusion blocks to the canonical template. Each conclusion must pair a finding with a source quotation; add PDF page numbers only after direct PDF verification or a reliable page mapping.
-- Knowledge writing belongs solely to `research-vault-knowledge-maintainer`. Before every Knowledge write, read `D:\ResearchVault\模板\知识库模板\README_知识库模板说明.md` and the matching `主题模板.md`, `概念模板.md`, `方法模板.md`, `关系模板.md`, or `争议模板.md`. Preserve the template's visible section order, tables, boundary sections, gaps, implications, and source tracking; do not substitute a short summary/source-list page. It must retain the frozen schema, Chinese-first human layer, claim sidecars, gap sidecars, and page-creation gate. Update an existing canonical page before considering a new page.
+- Knowledge writing belongs solely to `research-vault-knowledge-maintainer`. Before every Knowledge write, read `$KNOWLEDGE_TEMPLATE_DIR/README_知识库模板说明.md` and the matching `主题模板.md`, `概念模板.md`, `方法模板.md`, `关系模板.md`, or `争议模板.md`. Preserve the template's visible section order, tables, boundary sections, gaps, implications, and source tracking; do not substitute a short summary/source-list page. It must retain the frozen schema, Chinese-first human layer, claim sidecars, gap sidecars, and page-creation gate. Update an existing canonical page before considering a new page.
 - When the user asks for a folder, collection, research direction, or all papers, the Knowledge gate must build a coverage ledger and route every in-scope paper to at least one real-path `source_notes` list and template evidence/source section. Report total papers, Fulltext-available papers, Note-only papers, and unresolved coverage before declaring success.
 - Workflow states are not Knowledge evidence enums and must never be inserted into frozen Knowledge schema fields.
 - The visible Knowledge log remains human-readable. Keep raw `zotero_key`/`pdf_key` in the orchestrator run record or linked Note/Fulltext identity chain, not in visible Knowledge prose or the human-facing log.
 
 ## Logging and completion
 
-After all applicable validation succeeds, append one Chinese-format event to `01knowledge/log.md` through the Knowledge Maintainer workflow. Include date, human-readable source paper, Fulltext status, Analytical Note status, Knowledge action, updated pages/claims (if any), and validation result. Do not rewrite log history.
+After all applicable validation succeeds, append one Chinese-format event to `$KNOWLEDGE_DIR/log.md` through the Knowledge Maintainer workflow. Include date, human-readable source paper, Fulltext status, Analytical Note status, Knowledge action, updated pages/claims (if any), and validation result. Do not rewrite log history.
 
 Completion requires the final validator and the template/coverage audit to pass. A Note-template repair is complete only after Note↔Fulltext identity/path checks, image checks, and the Knowledge validator applicable to the observed state pass. If Fulltext is absent, report the accurate partial state (for example `FULLTEXT_DEFERRED`); do not claim `fulltext_verified` evidence.
 
