@@ -1,4 +1,7 @@
 # Zotero Analytical Workflow Skills
+[Zotero Analytical Workflow Skills](https://github.com/cheneternity/Zotero-Analytical-Workflow-Skills)
+[llm-for-zotero](https://github.com/yilewang/llm-for-zotero)
+
 
 本仓库的 Obsidian 目录和模板位置统一定义在
 [`LOCAL_CONFIG.md`](LOCAL_CONFIG.md)。任何执行型 Skill 都必须先读取该文件；本文不再把历史 Windows 路径作为运行配置。
