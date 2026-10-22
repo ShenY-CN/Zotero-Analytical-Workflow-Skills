@@ -1,6 +1,8 @@
-# Zotero Analytical Workflow Skills
-[Zotero Analytical Workflow Skills](https://github.com/cheneternity/Zotero-Analytical-Workflow-Skills)
-[llm-for-zotero](https://github.com/yilewang/llm-for-zotero)
+# Zotero Analytical Workflow Skills  
+repo
+[Zotero Analytical Workflow Skills](https://github.com/cheneternity/Zotero-Analytical-Workflow-Skills)  
+[llm-for-zotero](https://github.com/yilewang/llm-for-zotero)  
+
 
 
 本仓库的 Obsidian 目录和模板位置统一定义在
